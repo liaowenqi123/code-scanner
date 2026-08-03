@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "code-scanner-plus"
+version = "0.1.0"
+description = "代码审查辅助工具"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+authors = [
+    { name = "廖文祺", email = "13020116118@163.com" },
+]
+keywords = ["code-scan", "security", "lint", "review"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Quality Assurance",
+]
+dependencies = [
+    "click>=8.1.0",
+    "gitpython>=3.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/liaowenqi123/code-scanner"
+Repository = "https://github.com/liaowenqi123/code-scanner"
+
+[project.scripts]
+code-scanner-plus = "code_scanner.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
