@@ -38,6 +38,13 @@ tr:hover td { background: #161b22; }
 .file-path { color: #d2a8ff; font-weight: 600; font-family: Consolas, 'Courier New', monospace;
              font-size: 0.82rem; word-break: break-all; }
 .file-count { float: right; color: #8b949e; font-size: 0.8rem; }
+details.issues { margin-top: 0.4rem; }
+details.issues summary { cursor: pointer; color: #8b949e; font-size: 0.82rem;
+                         padding: 0.25rem 0; user-select: none; list-style: none; }
+details.issues summary::before { content: "▸ "; font-size: 0.75rem; }
+details.issues[open] summary::before { content: "▾ "; }
+details.issues summary:hover { color: #58a6ff; }
+details.issues .issue-list { margin-top: 0.3rem; }
 .issue { padding: 0.45rem 0; border-bottom: 1px dashed #21262d; font-size: 0.9rem; }
 .issue:last-child { border-bottom: none; }
 .issue-line { display: inline-block; min-width: 3.5rem; color: #58a6ff;
@@ -110,7 +117,9 @@ def _file_sections(results: dict) -> str:
         issues = "".join(_issue_html(f) for f in findings)
         sections.append(
             f'<div class="file-card"><div class="file-count">{len(findings)} 个问题</div>'
-            f'<div class="file-path">{html.escape(file_path)}</div>{issues}</div>'
+            f'<div class="file-path">{html.escape(file_path)}</div>'
+            f'<details class="issues"><summary>查看问题明细</summary>'
+            f'<div class="issue-list">{issues}</div></details></div>'
         )
     return "\n".join(sections)
 
