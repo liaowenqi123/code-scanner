@@ -52,7 +52,25 @@
 | medium   | 3分  | 中风险问题（超长函数、魔法数字等） |
 | low      | 1分  | 低风险问题（命名、注释等） |
 
-同时输出 high / medium / low 问题的等级分布。
+同时输出 high / medium / low 问题的等级分布，并根据总分给出质量等级：
+
+| 分数   | 等级 | 说明 |
+| ------ | ---- | ---- |
+| 90-100 | 🌟 卓越 | 代码质量极佳 |
+| 75-89  | 😊 良好 | 有少量小问题 |
+| 60-74  | 🙂 一般 | 存在值得关注的问题 |
+| 40-59  | 😷 较差 | 问题较多，建议整改 |
+| 20-39  | 💩 糟糕 | 大量问题，需要重构 |
+| 0-19   | ☣️ 危险 | 急需全面整改 |
+
+### 输出格式
+
+支持四种输出格式：
+
+- **彩色终端**（默认）：rich 渲染的彩色评分条、严重级别标签和汇总表格
+- **Markdown**：`--output markdown`，汇总与详细问题均用表格展示
+- **JSON**：`--output json`，包含完整 details，便于程序化消费
+- **HTML**：`--output html`，生成深色主题可视化报告，浏览器打开即用
 
 ## 安装
 
@@ -77,11 +95,17 @@ python -m code_scanner.cli scan
 # 扫描指定目录
 python -m code_scanner.cli scan --path /path/to/project
 
+# 彩色终端输出
+python -m code_scanner.cli scan --output console
+
 # 输出为Markdown格式（输出到控制台）
 python -m code_scanner.cli scan --output markdown
 
 # 输出为Markdown格式（保存到文件）
 python -m code_scanner.cli scan --output markdown --file report.md
+
+# 生成HTML可视化报告（保存到文件）
+python -m code_scanner.cli scan --output html --file report.html
 ```
 
 ### 生成自检报告
@@ -119,37 +143,23 @@ pytest tests/ -v
 ## 示例输出
 
 ```
-运行 secret 扫描器...
-运行 function_length 扫描器...
-运行 import 扫描器...
-运行 todo 扫描器...
-运行 complexity 扫描器...
-运行 line_length 扫描器...
-运行 error_handling 扫描器...
-运行 naming 扫描器...
-运行 magic_number 扫描器...
-运行 duplicate 扫描器...
-运行 structure 扫描器...
-运行 comments 扫描器...
+运行 12 个扫描器...
+secret ........ 2 个问题
+function_length  1 个问题
+import ........ 10 个问题
+...
 
-扫描完成！
-扫描文件数: 13
-secret: 2 个问题
-function_length: 1 个问题
-import: 10 个问题
-todo: 2 个问题
-complexity: 3 个问题
-line_length: 5 个问题
-error_handling: 1 个问题
-naming: 4 个问题
-magic_number: 6 个问题
-duplicate: 1 个问题
-structure: 2 个问题
-comments: 2 个问题
-
-质量评分: 62/100
-等级分布: high=3, medium=12, low=6
+┌────────────────────────────────────────────┐
+│           Code Scanner Plus                │
+│  质量评分: ████████░░░░ 62/100  🙂 一般    │
+│  high=3  medium=12  low=6                 │
+│  扫描文件: 13   总问题: 33                 │
+└────────────────────────────────────────────┘
 ```
+
+使用 `--output html --file report.html` 可生成深色主题的可视化报告：
+
+![HTML 报告](https://raw.githubusercontent.com/liaowenqi123/code-scanner/master/docs/report-preview.png)
 
 ## 项目结构
 
@@ -157,6 +167,11 @@ comments: 2 个问题
 code-scanner/
 ├── src/code_scanner/
 │   ├── cli.py              # 命令行接口
+│   ├── quality.py          # 质量等级与评分
+│   ├── output/             # 输出渲染
+│   │   ├── console.py      # rich 彩色终端
+│   │   ├── html.py         # HTML 报告
+│   │   └── markdown.py     # Markdown 报告
 │   └── scanners/           # 扫描器模块
 │       ├── secret.py
 │       ├── function_length.py
