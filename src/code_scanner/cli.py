@@ -26,9 +26,7 @@ from .scanners import (
 from .output.console import render_report, print_findings
 from .output.markdown import render_markdown
 from .output.html import render_html
-
-# 严重级别权重（质量评分用）
-SEVERITY_WEIGHTS = {"high": 5, "medium": 3, "low": 1}
+from .quality import compute_score
 
 # 旧扫描器的默认严重级别（旧 finding 无 severity 字段）
 DEFAULT_SEVERITY = {
@@ -77,21 +75,6 @@ def _extract_findings(scanner_name: str, scanner_results: dict) -> list:
     return normalized
 
 
-def _compute_score(results: dict) -> tuple:
-    """计算质量总分（0-100）和严重级别分布"""
-    distribution = {"high": 0, "medium": 0, "low": 0}
-    total_weight = 0
-    for scanner_data in results["scanners"].values():
-        for finding in scanner_data.get("findings", []):
-            severity = finding.get("severity", "low")
-            if severity not in distribution:
-                severity = "low"
-            distribution[severity] += 1
-            total_weight += SEVERITY_WEIGHTS[severity]
-    score = max(0, 100 - total_weight)
-    return score, distribution
-
-
 def _run_all_scanners(scanners: dict, path: str, results: dict) -> None:
     """运行所有扫描器并填充 results"""
     for name, scanner in scanners.items():
@@ -137,7 +120,7 @@ def scan(path: str, output: str, file: str):
     }
 
     _run_all_scanners(scanners, str(path_obj), results)
-    score, distribution = _compute_score(results)
+    score, distribution = compute_score(results)
     results["quality_score"] = score
     results["severity_distribution"] = distribution
 
@@ -182,7 +165,7 @@ def self_report(path: str):
     }
 
     _run_all_scanners(scanners, str(path_obj), results)
-    score, distribution = _compute_score(results)
+    score, distribution = compute_score(results)
     results["quality_score"] = score
     results["severity_distribution"] = distribution
 
